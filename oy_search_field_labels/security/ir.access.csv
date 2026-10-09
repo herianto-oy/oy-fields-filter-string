@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_search_field_label_user,Search field labels read,search.field.label,base.group_user,r,
+access_search_field_label_system,Search field labels administration,search.field.label,base.group_system,crud,
+access_search_field_label_line_user,Search field label lines read,search.field.label.line,base.group_user,r,
+access_search_field_label_line_system,Search field label lines administration,search.field.label.line,base.group_system,crud,
