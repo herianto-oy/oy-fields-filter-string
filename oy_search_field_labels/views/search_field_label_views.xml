@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_search_field_label_list" model="ir.ui.view">
+        <field name="name">search.field.label.list</field>
+        <field name="model">search.field.label</field>
+        <field name="arch" type="xml">
+            <list string="Search Field Labels" decoration-muted="not active">
+                <field name="model_id"/>
+                <field name="name" optional="show"/>
+                <field name="model_name"/>
+                <field name="scope"/>
+                <field name="group_ids" widget="many2many_tags" optional="show"/>
+                <field name="user_ids" widget="many2many_tags" optional="show"/>
+                <field name="target_scope"/>
+                <field name="action_id" optional="show"/>
+                <field name="menu_id" optional="show"/>
+                <field name="priority"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_search_field_label_form" model="ir.ui.view">
+        <field name="name">search.field.label.form</field>
+        <field name="model">search.field.label</field>
+        <field name="arch" type="xml">
+            <form string="Search Field Label">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <group>
+                        <group string="Model">
+                            <field name="model_id" options="{'no_create': True, 'no_open': True}" readonly="line_ids" force_save="1"/>
+                            <field name="model_name"/>
+                            <field name="name" placeholder="Optional description"/>
+                            <field name="priority"/>
+                        </group>
+                        <group string="Scope">
+                            <field name="scope" widget="radio" options="{'horizontal': True}"/>
+                            <field name="group_ids" widget="many2many_tags"
+                                   invisible="scope != 'group'" required="scope == 'group'"
+                                   options="{'no_create': True}"/>
+                            <field name="user_ids" widget="many2many_tags"
+                                   invisible="scope != 'user'" required="scope == 'user'"
+                                   options="{'no_create': True}"/>
+                            <field name="target_scope"/>
+                            <field name="action_id" invisible="target_scope != 'action'"
+                                   required="target_scope == 'action'" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="available_menu_ids" invisible="1"/>
+                            <field name="menu_id" invisible="target_scope != 'menu'"
+                                   domain="[('id', 'in', available_menu_ids)]"
+                                   required="target_scope == 'menu'" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Field Settings" name="field_settings">
+                            <field name="line_ids" readonly="not model_id">
+                                <list editable="bottom" decoration-muted="not active">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="field_id" domain="[('model_id', '=', parent.model_id)]"
+                                           context="{'search_field_labels_technical_name': True}"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="field_name" optional="show"/>
+                                    <field name="original_label" optional="show"/>
+                                    <field name="filter_label" placeholder="Use original label"/>
+                                    <field name="group_by_label" placeholder="Use original label"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <div class="text-muted">
+                        Set at least one label per line. Empty labels inherit from a more general configuration,
+                        then the original field label. Specific menus take precedence over actions, then all screens.
+                        At the same location, User takes precedence over Group, then Global.
+                        Higher Priority wins when scopes are equal.
+                        Reload the browser page after saving to apply changes.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_search_field_label_search" model="ir.ui.view">
+        <field name="name">search.field.label.search</field>
+        <field name="model">search.field.label</field>
+        <field name="arch" type="xml">
+            <search string="Search Field Labels">
+                <field name="model_id"/>
+                <field name="model_name"/>
+                <field name="name"/>
+                <field name="group_ids"/>
+                <field name="user_ids"/>
+                <field name="action_id"/>
+                <field name="menu_id"/>
+                <field name="line_ids" string="Field" filter_domain="[('line_ids.field_id', 'ilike', self)]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="scope_global" string="Global" domain="[('scope', '=', 'global')]"/>
+                <filter name="scope_group" string="Group" domain="[('scope', '=', 'group')]"/>
+                <filter name="scope_user" string="User" domain="[('scope', '=', 'user')]"/>
+                <group>
+                    <filter name="group_model" string="Model" context="{'group_by': 'model_id'}"/>
+                    <filter name="group_scope" string="Apply To" context="{'group_by': 'scope'}"/>
+                    <filter name="group_target" string="Apply On" context="{'group_by': 'target_scope'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_search_field_label" model="ir.actions.act_window">
+        <field name="name">Search Field Labels</field>
+        <field name="res_model">search.field.label</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_search_field_label_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Configure a search field label</p>
+            <p>Choose a model, then add field settings for custom filters and custom groups.</p>
+        </field>
+    </record>
+    <menuitem id="menu_search_field_label" name="Search Field Labels"
+              parent="base.next_id_9" action="action_search_field_label"
+              sequence="25" groups="base.group_system"/>
+</odoo>
