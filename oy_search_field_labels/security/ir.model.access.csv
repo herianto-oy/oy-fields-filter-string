@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_search_field_label_user,Search field labels read,model_search_field_label,base.group_user,1,0,0,0
+access_search_field_label_system,Search field labels administration,model_search_field_label,base.group_system,1,1,1,1
+access_search_field_label_line_user,Search field label lines read,model_search_field_label_line,base.group_user,1,0,0,0
+access_search_field_label_line_system,Search field label lines administration,model_search_field_label_line,base.group_system,1,1,1,1
